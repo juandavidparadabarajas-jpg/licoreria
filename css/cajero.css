@@ -261,22 +261,50 @@
 .row-anulada td { text-decoration: line-through; text-decoration-color: rgba(231, 76, 60, 0.5); }
 .row-anulada td:last-child, .row-anulada .pill { text-decoration: none; }
 
+/* ---------- Métricas del Resumen (operativo) ---------- */
+.op-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.op-metric { padding: 20px; display: flex; flex-direction: column; gap: 6px; }
+.op-label { font-size: 0.82rem; color: var(--text-muted); }
+.op-value { font-size: 1.8rem; font-weight: 700; }
+.op-foot { font-size: 0.75rem; }
+
 /* ===================== RESPONSIVE ===================== */
 @media (max-width: 960px) {
-  /* Topbar: la barra de pestañas pasa a una fila propia con scroll horizontal */
+  /* Pestañas convertidas en menú flotante tipo iPhone (barra inferior) */
   .topbar { flex-wrap: wrap; gap: 10px; }
   .topbar-tabs {
-    order: 3;
-    width: 100%;
+    position: fixed;
+    left: 12px; right: 12px; bottom: 12px;
+    width: auto;
+    background: rgba(21, 25, 34, 0.94);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
+    padding: 8px;
+    gap: 4px;
     overflow-x: auto;
+    scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
+    z-index: 100;
   }
-  .topbar-tabs::-webkit-scrollbar { height: 0; }
-  .tab { white-space: nowrap; flex: 0 0 auto; }
+  .topbar-tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    min-width: 66px;
+    padding: 8px 6px;
+    font-size: 0.6rem; line-height: 1.1; text-align: center;
+    white-space: nowrap;
+    border-radius: 14px;
+  }
+  .tab i { font-size: 1.15rem; }
+  body { padding-bottom: 92px; }          /* espacio para la barra flotante */
+  .op-metrics { grid-template-columns: repeat(2, 1fr); }
+  .btn, .btn-block { white-space: normal; }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 960px) {
   /* POS en una sola columna, con desplazamiento natural de la página */
   .pos { grid-template-columns: 1fr; height: auto; }
   .pos-products, .pos-grid { overflow: visible; }
@@ -306,6 +334,10 @@
 
   .modal-card { padding: 18px; }
   .promos-staff { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .op-metrics { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 420px) {

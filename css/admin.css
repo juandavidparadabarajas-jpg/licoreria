@@ -38,7 +38,7 @@
 .side-logout { margin-top: 10px; }
 
 /* ---------- Contenido ---------- */
-.content { padding: 24px 30px; overflow-x: hidden; }
+.content { padding: 24px 30px; overflow-x: hidden; min-width: 0; }
 .content-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
 .content-head h1 { font-size: 1.7rem; }
 .content-user { display: flex; align-items: center; gap: 12px; }
@@ -223,6 +223,8 @@
   .content-head h1 { font-size: 1.35rem; }
   .metrics, .fin-metrics { grid-template-columns: 1fr; }
   .metric-value { font-size: 1.6rem; }
+  .btn, .btn-block { white-space: normal; }   /* etiquetas largas envuelven */
+  .panel, .card { min-width: 0; }
 
   .fin-toolbar { align-items: stretch; }
   .fin-range { flex-wrap: wrap; }
