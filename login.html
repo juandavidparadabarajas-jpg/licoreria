@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso Staff — Licorería Madnight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/login.css" />
+</head>
+<body class="login-body">
+  <div class="login-card card">
+    <div class="login-head">
+      <div class="login-mark"><img src="imagen.png" alt="Mad Night Licorera" /></div>
+      <h1>Licorería <span class="gold">Madnight</span></h1>
+      <p class="muted">Panel interno · Acceso de personal</p>
+    </div>
+
+    <form id="loginForm" autocomplete="on">
+      <div class="field">
+        <label for="email">Correo electrónico</label>
+        <input id="email" type="email" placeholder="tucorreo@madnight.com" required />
+      </div>
+
+      <div class="field">
+        <label for="password">Contraseña</label>
+        <div class="pass-wrap">
+          <input id="password" type="password" placeholder="••••••••" required />
+          <button type="button" id="togglePass" class="pass-toggle" aria-label="Mostrar contraseña">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" id="btnLogin" class="btn btn-gold btn-block">Iniciar sesión</button>
+      <p id="loginError" class="login-error hidden"></p>
+    </form>
+
+    <a href="index.html" class="back-link muted"><i class="fa-solid fa-arrow-left"></i> Volver a la tienda</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

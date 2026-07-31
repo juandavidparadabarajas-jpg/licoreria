@@ -1,0 +1,593 @@
+/* =========================================================================
+   LANDING.CSS — Madnight
+   -------------------------------------------------------------------------
+   Índice:
+   1. Fondo global
+   2. Navbar
+   3. Hero
+   4. Reveal on scroll (efectos ligeros, sin librerías JS)
+   5. Marquee de marcas
+   6. Encabezados de sección
+   7. Promociones
+   8. Catálogo (grid + tarjetas de producto)
+   9. Footer
+   10. Responsive
+   ========================================================================= */
+
+/* ---------- 1. Fondo global ---------- */
+body {
+  background:
+    radial-gradient(1200px 700px at 75% -10%, rgba(0, 234, 255, 0.05), transparent 60%),
+    radial-gradient(1000px 800px at 0% 110%, rgba(255, 0, 200, 0.06), transparent 55%),
+    var(--bg);
+}
+
+/* ---------- 2. Navbar ---------- */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(10, 11, 15, 0.7);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nav-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 14px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+}
+
+.brand strong {
+  color: var(--gold);
+}
+
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  transition: color 0.25s ease;
+}
+
+.nav-links a:hover {
+  color: #fff;
+}
+
+/* ---------- 3. Hero ---------- */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 100px 24px 60px;
+  background:
+    linear-gradient(180deg, rgba(8, 9, 13, 0.86) 0%, rgba(8, 9, 13, 0.78) 45%, rgba(8, 9, 13, 0.94) 100%),
+    url('https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1920&q=80') center / cover no-repeat,
+    radial-gradient(circle at 50% 0%, #14161f 0%, #0b0c11 55%, #08090d 100%);
+  background-attachment: scroll;
+}
+
+/* Glows suaves, decorativos y estáticos: solo transform/opacity si se animan */
+.hero-glow {
+  position: absolute;
+  width: 720px;
+  height: 720px;
+  border-radius: 50%;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.hero-glow-1 {
+  top: -220px;
+  left: 4%;
+  background: radial-gradient(circle, rgba(0, 234, 255, 0.35), transparent 62%);
+}
+
+.hero-glow-2 {
+  bottom: -260px;
+  right: 2%;
+  background: radial-gradient(circle, rgba(255, 0, 200, 0.30), transparent 62%);
+}
+
+.hero-stage {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--gold);
+  margin-bottom: 22px;
+}
+
+.hero-logo-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.hero-logo {
+  width: min(460px, 82vw);
+  height: auto;
+  display: block;
+}
+
+.hero-sub {
+  max-width: 460px;
+  margin: 6px auto 30px;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 30px;
+  border: 1px solid rgba(0, 234, 255, 0.5);
+  border-radius: 60px;
+  color: #eafcff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+  box-shadow: 0 0 18px rgba(0, 234, 255, 0.18), inset 0 0 14px rgba(0, 234, 255, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
+}
+
+.hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 32px rgba(0, 234, 255, 0.4), inset 0 0 18px rgba(0, 234, 255, 0.14);
+}
+
+.hero-cta i {
+  transition: transform 0.3s ease;
+}
+
+.hero-cta:hover i {
+  transform: translateY(3px);
+}
+
+/* ---------- 4. Reveal on scroll ----------
+   El JS solo agrega/quita clases; toda la animación vive aquí, en CSS,
+   así el navegador la puede optimizar (composición en GPU) sin depender
+   de una librería externa como anime.js. */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  /* will-change se activa solo mientras el elemento está por animar */
+  will-change: opacity, transform;
+}
+
+.reveal.reveal-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Una vez terminó la transición, soltamos will-change para liberar memoria GPU */
+.reveal.reveal-done {
+  will-change: auto;
+}
+
+/* ---------- 5. Marquee de marcas ---------- */
+.marcas {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: #0c0d12;
+  padding: 40px 0; /* espacio vertical para que respiren los logos grandes */
+  overflow: hidden;
+}
+
+.marcas-row {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px 50px;
+}
+
+.marca-logo {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.marca-logo:hover {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+/* ---------- 6. Encabezados de sección ---------- */
+.section-head {
+  margin-bottom: 42px;
+}
+
+.section-head h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.section-head .muted {
+  max-width: 420px;
+}
+
+/* ---------- 7. Promociones ---------- */
+.promos {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 90px 40px 20px;
+}
+
+.promos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 26px;
+}
+
+.promo-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #14161e;
+  border-color: rgba(212, 175, 55, 0.35);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.promo-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 26px rgba(212, 175, 55, 0.22);
+}
+
+.promo-img {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.6rem;
+  color: var(--gold);
+  overflow: hidden;
+}
+
+.promo-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.promo-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--wine);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.promo-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.promo-body h3 {
+  font-size: 1.15rem;
+}
+
+.promo-precio {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+/* ---------- 8. Catálogo ---------- */
+.catalogo {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 90px 40px;
+}
+
+.catalogo-tools {
+  max-width: 460px;
+  margin-bottom: 18px;
+}
+
+.cat-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.cat-chip {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: 40px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.cat-chip:hover {
+  color: #fff;
+  border-color: var(--text-muted);
+}
+
+.cat-chip.active {
+  background: var(--gold);
+  color: #201a00;
+  border-color: var(--gold);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 26px;
+}
+
+/* Tarjeta de producto — hover con transiciones puntuales (no "all") para
+   que el navegador solo recalcule lo necesario y use GPU cuando aplica. */
+.producto {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #14161e;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.producto:hover {
+  transform: scale(1.03);
+  border-color: rgba(0, 234, 255, 0.4);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.55), 0 0 28px rgba(0, 234, 255, 0.2);
+}
+
+.producto-img {
+  aspect-ratio: 4 / 5;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.2rem;
+  color: var(--gold);
+  overflow: hidden;
+}
+
+.producto-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.producto-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+}
+
+.producto-cat {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #00eaff;
+}
+
+.producto-nombre {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.producto-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.producto-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 6px 0;
+}
+
+.producto-precio {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.stock-badge {
+  font-size: 0.68rem;
+  color: #2ecc71;
+  border: 1px solid rgba(46, 204, 113, 0.35);
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* Botón WhatsApp */
+.btn-wa {
+  background: #25d366;
+  color: #06210f;
+  margin-top: 4px;
+  transition: box-shadow 0.3s ease, transform 0.15s ease;
+}
+
+.btn-wa:hover {
+  box-shadow: 0 10px 26px rgba(37, 211, 102, 0.4);
+}
+
+.btn-wa:active {
+  transform: scale(0.97);
+}
+
+.btn-wa .btn-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 0;
+  color: var(--text-muted);
+}
+
+/* ---------- 9. Footer ---------- */
+.footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: #0c0d12;
+  padding: 70px 40px 26px;
+}
+
+.footer-grid {
+  max-width: 1320px;
+  margin: 0 auto 36px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+}
+
+.footer h3 {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.footer h4 {
+  margin-bottom: 10px;
+}
+
+.footer p {
+  margin-bottom: 8px;
+}
+
+.footer a {
+  transition: color 0.2s ease;
+}
+
+.footer a:hover {
+  color: var(--gold);
+}
+
+.socials {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.socials a {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-muted);
+  transition: transform 0.25s ease, color 0.25s ease, background 0.25s ease;
+}
+
+.socials a:hover {
+  background: var(--gold);
+  color: #201a00;
+  transform: translateY(-3px);
+}
+
+.footer-copy {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+/* ---------- 10. Responsive ---------- */
+@media (max-width: 760px) {
+  .nav-inner {
+    padding: 12px 20px;
+  }
+
+  .nav-links a:not(.btn) {
+    display: none;
+  }
+
+  .promos,
+  .catalogo {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
