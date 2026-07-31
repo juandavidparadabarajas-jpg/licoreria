@@ -19,7 +19,8 @@
       <strong>Madnight</strong> · Panel de Control Operativo
     </div>
     <nav class="topbar-tabs">
-      <button class="tab active" data-view="pos"><i class="fa-solid fa-receipt"></i> Punto de Venta</button>
+      <button class="tab active" data-view="resumen"><i class="fa-solid fa-chart-simple"></i> Resumen</button>
+      <button class="tab" data-view="pos"><i class="fa-solid fa-receipt"></i> Punto de Venta</button>
       <button class="tab" data-view="turno"><i class="fa-solid fa-cash-register"></i> Turno</button>
       <button class="tab" data-view="inventario"><i class="fa-solid fa-boxes-stacked"></i> Inventario</button>
       <button class="tab" data-view="gastos"><i class="fa-solid fa-coins"></i> Caja chica</button>
@@ -33,8 +34,38 @@
     </div>
   </header>
 
+  <!-- ===================== VISTA RESUMEN ===================== -->
+  <main id="view-resumen" class="inventario">
+    <div class="inv-head">
+      <h2><i class="fa-solid fa-chart-simple gold"></i> Resumen del día</h2>
+      <button id="btnRefrescarResumen" class="btn btn-outline"><i class="fa-solid fa-rotate"></i> Actualizar</button>
+    </div>
+    <div class="op-metrics">
+      <div class="op-metric card">
+        <span class="op-label">Ventas de hoy</span>
+        <span id="rVentas" class="op-value gold">—</span>
+        <span class="op-foot muted">Total facturado</span>
+      </div>
+      <div class="op-metric card">
+        <span class="op-label">Gastos de hoy</span>
+        <span id="rGastos" class="op-value text-red">—</span>
+        <span class="op-foot muted">Caja chica y egresos</span>
+      </div>
+      <div class="op-metric card">
+        <span class="op-label">Neto del día</span>
+        <span id="rNeto" class="op-value">—</span>
+        <span class="op-foot muted">Ventas − Gastos</span>
+      </div>
+      <div class="op-metric card">
+        <span class="op-label">Tickets</span>
+        <span id="rTickets" class="op-value">—</span>
+        <span class="op-foot muted">Ventas registradas</span>
+      </div>
+    </div>
+  </main>
+
   <!-- ===================== VISTA POS ===================== -->
-  <main id="view-pos" class="pos">
+  <main id="view-pos" class="pos hidden">
     <!-- Columna izquierda: productos -->
     <section class="pos-products card">
       <div class="pos-search">
