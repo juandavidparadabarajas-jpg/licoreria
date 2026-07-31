@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Licorería Madnight — Los mejores licores a un clic</title>
+  <meta name="description" content="Catálogo de licores premium de Licorería Madnight. Whisky, tequila, vinos y más. Compra fácil y rápido por WhatsApp." />
+  <meta name="keywords" content="licorería, licores, whisky, tequila, vino, ron, cerveza, comprar licor" />
+  <meta name="author" content="Licorería Madnight" />
+
+  <!-- Open Graph (SEO / redes) -->
+  <meta property="og:title" content="Licorería Madnight" />
+  <meta property="og:description" content="Los mejores licores premium, disponibles ahora." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="logo.png" />
+
+  <!-- Favicons (logo en la pestaña / ventana de búsqueda) -->
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="shortcut icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/landing.css" />
+</head>
+<body>
+  <!-- ===================== NAVBAR ===================== -->
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="brand">
+        <img class="brand-logo" src="imagen.png" alt="Mad Night Licorera" />
+        <span>Licorería <strong>Madnight</strong></span>
+      </a>
+      <nav class="nav-links">
+        <a href="#promos">Promociones</a>
+        <a href="#catalogo">Catálogo</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="login.html" class="btn btn-outline">Acceso Staff</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="hero">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+
+    <div class="hero-stage">
+      <span class="hero-eyebrow">Selección Premium — Bucaramanga</span>
+      <div class="hero-logo-wrap">
+        <img class="hero-logo" src="imagen.png" alt="Mad Night Licorera" />
+      </div>
+      <p class="hero-sub">El mejor trago para tu rumba, bien frío y a la puerta de tu casa. Pide por WhatsApp y no dejes caer la fiesta.</p>
+      <a href="#catalogo" class="hero-cta">
+        <span>Explorar catálogo</span>
+        <i class="fa-solid fa-arrow-down-long"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===================== PROMOCIONES ===================== -->
+  <section id="promos" class="promos hidden">
+    <div class="section-head reveal">
+      <h2><i class="fa-solid fa-tags gold"></i> Promociones</h2>
+      <p class="muted">Ofertas vigentes por tiempo limitado.</p>
+    </div>
+    <div id="promosGrid" class="promos-grid"></div>
+  </section>
+
+  <!-- ===================== MARCAS ===================== -->
+  <section class="marcas reveal" aria-label="Marcas disponibles">
+    <p class="marcas-eyebrow">Trabajamos las mejores marcas</p>
+    <div class="marcas-row">
+      <img class="marca-logo" src="1.png" alt="Aguardiente Antioqueño" loading="lazy" />
+      <img class="marca-logo" src="2.png" alt="Ron Viejo de Caldas" loading="lazy" />
+      <img class="marca-logo" src="3.png" alt="Cerveza Águila" loading="lazy" />
+      <img class="marca-logo" src="4.png" alt="Club Colombia" loading="lazy" />
+      <img class="marca-logo" src="5.png" alt="Poker" loading="lazy" />
+      <img class="marca-logo" src="6.png" alt="Old Parr" loading="lazy" />
+      <img class="marca-logo" src="7.png" alt="Buchanan's" loading="lazy" />
+      <img class="marca-logo" src="8.png" alt="Corona" loading="lazy" />
+    </div>
+  </section>
+
+  <!-- ===================== CATÁLOGO ===================== -->
+  <section id="catalogo" class="catalogo">
+    <div class="section-head reveal">
+      <h2>Nuestro Catálogo</h2>
+      <p class="muted">Solo mostramos productos disponibles en existencia.</p>
+    </div>
+
+    <!-- Filtro / búsqueda -->
+    <div class="catalogo-tools">
+      <div class="input-icon">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="buscador" type="text" placeholder="Buscar por nombre o categoría..." />
+      </div>
+    </div>
+    <div id="catFiltros" class="cat-filtros"></div>
+
+    <!-- Grid dinámico -->
+    <div id="grid" class="grid">
+      <div class="spinner"></div>
+    </div>
+  </section>
+
+  <!-- ===================== NOSOTROS / FOOTER ===================== -->
+  <footer id="nosotros" class="footer">
+    <div class="footer-grid">
+      <div>
+        <h3 class="gold">Licorería Madnight</h3>
+        <p class="muted">Los mejores licores, a un mensaje de distancia. Bebe con responsabilidad. Venta exclusiva para mayores de edad.</p>
+        <div class="socials">
+          <a id="linkFacebook" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a id="linkInstagram" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a id="linkWhats" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <p class="muted"><i class="fa-solid fa-location-dot gold"></i> <span id="direccion"></span></p>
+        <p class="muted"><i class="fa-brands fa-whatsapp gold"></i> <a id="waTexto" target="_blank" rel="noopener"></a></p>
+      </div>
+      <div>
+        <h4>Staff</h4>
+        <a href="login.html" class="gold">Iniciar sesión <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+    <p class="footer-copy">© <span id="year"></span> <span id="copyName"></span>. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/landing.js"></script>
+</body>
+</html>
