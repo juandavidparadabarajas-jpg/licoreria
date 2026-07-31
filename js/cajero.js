@@ -13,12 +13,13 @@ const CART = new Map();      // id -> { producto, cantidad }
   document.getElementById('userName').textContent = PROFILE.nombre || PROFILE.email;
   await cargarProductos();
   cargarCategoriasPos();
+  cargarResumen();
 })();
 
 document.getElementById('btnLogout').addEventListener('click', logout);
 
 /* --------------------- Navegación por pestañas --------------------- */
-const VISTAS = ['pos', 'turno', 'inventario', 'gastos', 'historial', 'promos'];
+const VISTAS = ['resumen', 'pos', 'turno', 'inventario', 'gastos', 'historial', 'promos'];
 document.querySelectorAll('.tab').forEach((t) =>
   t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach((x) => x.classList.remove('active'));
@@ -27,6 +28,7 @@ document.querySelectorAll('.tab').forEach((t) =>
     VISTAS.forEach((name) =>
       document.getElementById('view-' + name).classList.toggle('hidden', v !== name)
     );
+    if (v === 'resumen') cargarResumen();
     if (v === 'inventario') { renderInventario(); llenarMovProductos(); }
     if (v === 'historial') cargarHistorial();
     if (v === 'promos') cargarPromosStaff();
@@ -34,6 +36,38 @@ document.querySelectorAll('.tab').forEach((t) =>
     if (v === 'gastos') cargarGastosOp();
   })
 );
+
+/* --------------------- Resumen del día (ventas y gastos) --------------------- */
+async function cargarResumen() {
+  const inicioDia = new Date(); inicioDia.setHours(0, 0, 0, 0);
+  const hoyStr = new Date().toISOString().slice(0, 10);
+
+  // Ventas propias de hoy (RLS limita a este operativo), sin anuladas
+  const { data: ventas } = await db
+    .from(DB.ventas)
+    .select('total, estado, created_at')
+    .neq('estado', 'ANULADA')
+    .gte('created_at', inicioDia.toISOString());
+
+  // Gastos de hoy
+  const { data: gastos } = await db
+    .from(DB.gastos)
+    .select('monto, fecha')
+    .gte('fecha', hoyStr);
+
+  const totVentas = (ventas || []).reduce((s, v) => s + Number(v.total || 0), 0);
+  const totGastos = (gastos || []).reduce((s, g) => s + Number(g.monto || 0), 0);
+  const neto = totVentas - totGastos;
+
+  document.getElementById('rVentas').textContent = money(totVentas);
+  document.getElementById('rGastos').textContent = '−' + money(totGastos);
+  document.getElementById('rTickets').textContent = (ventas || []).length;
+  const nEl = document.getElementById('rNeto');
+  nEl.textContent = money(neto);
+  nEl.className = 'op-value ' + (neto >= 0 ? 'text-green' : 'text-red');
+}
+
+document.getElementById('btnRefrescarResumen').addEventListener('click', cargarResumen);
 
 /* --------------------- Carga de productos --------------------- */
 async function cargarProductos() {
