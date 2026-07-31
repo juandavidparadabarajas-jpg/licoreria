@@ -270,12 +270,12 @@ function renderInventario(filtro = '') {
       else if (p.stock_actual <= 5) { pill = 'low'; txt = 'Bajo'; }
       return `
       <tr>
-        <td>${esc(p.nombre)}</td>
-        <td class="muted">${esc(p.categoria || '—')}</td>
-        <td>${money(p.precio_venta)}</td>
-        <td><strong>${p.stock_actual}</strong></td>
-        <td><span class="pill ${pill}">${txt}</span></td>
-        <td><button class="icon-btn" data-edit-prod="${p.id}"><i class="fa-solid fa-pen-to-square"></i> Editar</button></td>
+        <td data-label="Producto"><strong>${esc(p.nombre)}</strong></td>
+        <td data-label="Categoría" class="muted">${esc(p.categoria || '—')}</td>
+        <td data-label="Precio">${money(p.precio_venta)}</td>
+        <td data-label="Stock"><strong>${p.stock_actual}</strong></td>
+        <td data-label="Estado"><span class="pill ${pill}">${txt}</span></td>
+        <td data-label="Acción"><button class="icon-btn" data-edit-prod="${p.id}"><i class="fa-solid fa-pen-to-square"></i> Editar</button></td>
       </tr>`;
     })
     .join('');
