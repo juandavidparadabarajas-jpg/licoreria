@@ -299,7 +299,20 @@
     border-radius: 14px;
   }
   .tab i { font-size: 1.15rem; }
-  body { padding-bottom: 92px; }          /* espacio para la barra flotante */
+  body { padding-bottom: 120px; }         /* espacio para la barra flotante */
+
+  /* Cada vista reserva espacio abajo para no quedar tapada por el menú.
+     Selector por ID: gana en especificidad al padding de cada clase. */
+  #view-resumen,
+  #view-pos,
+  #view-turno,
+  #view-inventario,
+  #view-gastos,
+  #view-historial,
+  #view-promos {
+    padding-bottom: 140px;
+  }
+
   .op-metrics { grid-template-columns: repeat(2, 1fr); }
   .btn, .btn-block { white-space: normal; }
 }
@@ -318,11 +331,11 @@
   .rol-badge { display: none; }              /* ahorra espacio en móvil */
   .topbar-user { gap: 10px; }
 
-  .pos { padding: 12px; gap: 12px; }
+  .pos { padding: 12px 12px 140px; gap: 12px; }
   .pos-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
   .ticket-actions { grid-template-columns: 1fr 1fr; }
 
-  .inventario { padding: 14px; }
+  .inventario { padding: 14px 14px 140px; }
   .inv-head input { max-width: none; width: 100%; }
 
   .turno-grid { grid-template-columns: 1fr; }
