@@ -54,7 +54,17 @@
           <div class="metric card">
             <span class="metric-label">Ventas de hoy</span>
             <span id="mVentas" class="metric-value">—</span>
-            <span class="metric-foot muted">Total facturado</span>
+            <span class="metric-foot muted">Todo el dinero (efectivo + banco)</span>
+          </div>
+          <div class="metric card">
+            <span class="metric-label">En efectivo hoy</span>
+            <span id="mEfectivo" class="metric-value">—</span>
+            <span class="metric-foot muted">Pagos en efectivo</span>
+          </div>
+          <div class="metric card">
+            <span class="metric-label">En transferencia / banco hoy</span>
+            <span id="mBanco" class="metric-value">—</span>
+            <span class="metric-foot muted">Transferencias y tarjetas</span>
           </div>
           <div class="metric card">
             <span class="metric-label">Ganancia neta hoy</span>
@@ -88,8 +98,15 @@
       <!-- ---------- VISTA: HISTORIAL DE VENTAS ---------- -->
       <section id="view-ventas" class="view hidden">
         <div class="view-toolbar">
-          <p class="muted">Transacciones registradas. Las ventas anuladas se conservan como constancia y se excluyen de la contabilidad.</p>
-          <button id="btnRefrescarVentas" class="btn btn-outline"><i class="fa-solid fa-rotate"></i> Actualizar</button>
+          <p class="muted">Transacciones registradas. Filtra por día para revisar cierres anteriores; consultar el pasado no afecta el día en curso ni ningún otro.</p>
+          <div class="flex gap center" style="flex-wrap:wrap">
+            <div class="input-icon">
+              <i class="fa-solid fa-calendar-day"></i>
+              <input id="ventasFecha" type="date" style="width:auto;padding-left:36px" />
+            </div>
+            <button id="btnVentasTodo" class="btn btn-outline"><i class="fa-solid fa-layer-group"></i> Ver todo</button>
+            <button id="btnRefrescarVentas" class="btn btn-outline"><i class="fa-solid fa-rotate"></i> Actualizar</button>
+          </div>
         </div>
         <div class="table-wrap card">
           <table class="tabla">
