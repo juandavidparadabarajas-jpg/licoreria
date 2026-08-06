@@ -20,11 +20,13 @@ document.getElementById('btnLogout').addEventListener('click', logout);
 
 /* --------------------- Navegación por pestañas --------------------- */
 const VISTAS = ['resumen', 'pos', 'turno', 'inventario', 'gastos', 'historial', 'promos'];
+let VISTA_ACTUAL = 'resumen';
 document.querySelectorAll('.tab').forEach((t) =>
   t.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach((x) => x.classList.remove('active'));
     t.classList.add('active');
     const v = t.dataset.view;
+    VISTA_ACTUAL = v;
     VISTAS.forEach((name) =>
       document.getElementById('view-' + name).classList.toggle('hidden', v !== name)
     );
@@ -36,6 +38,121 @@ document.querySelectorAll('.tab').forEach((t) =>
     if (v === 'gastos') cargarGastosOp();
   })
 );
+
+/* =========================================================================
+   AYUDA CONTEXTUAL — guía "qué es / para qué sirve / cómo se usa" por sección
+   ========================================================================= */
+const AYUDA = {
+  resumen: {
+    titulo: 'Resumen del día',
+    que: 'Es la pantalla de inicio con un vistazo rápido de cómo va tu día.',
+    sirve: 'Saber en segundos cuánto has vendido, cuánto se ha gastado y cuántos tickets llevas, sin buscar nada.',
+    usar: [
+      'Las tarjetas muestran las ventas de hoy, los gastos de hoy, el neto (ventas menos gastos) y el número de tickets.',
+      'Presiona "Actualizar" para refrescar los números en cualquier momento.',
+    ],
+    nota: 'Los datos son solo de tu sesión y del día en curso.',
+  },
+  pos: {
+    titulo: 'Punto de Venta',
+    que: 'Es la caja donde registras y cobras las ventas.',
+    sirve: 'Armar el ticket del cliente, elegir cómo paga y cobrar; el sistema descuenta el stock solo.',
+    usar: [
+      'Busca o filtra por categoría a la izquierda y toca los productos para agregarlos al ticket.',
+      'En el ticket de la derecha ajusta las cantidades o quita productos.',
+      'Elige el método de pago (Efectivo, Tarjeta o Transferencia) y presiona "Cobrar".',
+    ],
+    nota: 'Al cobrar, el stock baja automáticamente y la venta queda guardada. Abajo ves el total acumulado de tu sesión.',
+  },
+  turno: {
+    titulo: 'Turno de caja',
+    que: 'Es la apertura y el cierre de tu caja del día.',
+    sirve: 'Registrar con cuánto efectivo abriste y, al final, cuánto efectivo hay realmente al cerrar.',
+    usar: [
+      'Al empezar el día, escribe la base inicial de efectivo y presiona "Abrir turno".',
+      'Al terminar, cuenta el efectivo físico de la caja, escríbelo y presiona "Cerrar turno".',
+    ],
+    nota: 'El sistema NO te muestra cuánto debería haber: tú solo cuentas y reportas. Es a propósito, para que el conteo sea imparcial.',
+  },
+  inventario: {
+    titulo: 'Inventario y movimientos',
+    que: 'Es la vista del stock de cada producto y el registro de entradas y salidas.',
+    sirve: 'Consultar existencias en tiempo real, corregir precio o stock, y dejar constancia de mercancía que entra o sale.',
+    usar: [
+      'Usa el buscador para encontrar un producto y revisa su stock y estado.',
+      'Para mover stock, elige el producto, el tipo (Entrada o Salida), la cantidad y el motivo (obligatorio).',
+      'El botón "Editar" permite corregir el precio o el stock de un producto puntual.',
+    ],
+    nota: 'El motivo siempre es obligatorio: así queda registrado por qué se movió el inventario.',
+  },
+  gastos: {
+    titulo: 'Caja chica (gastos)',
+    que: 'Es donde registras los gastos pequeños del día a día.',
+    sirve: 'Anotar lo que sale de la caja (aseo, domicilios, etc.) para que el neto del día sea real.',
+    usar: [
+      'Escribe el concepto o justificación (obligatorio), el monto y la fecha.',
+      'Presiona "Registrar gasto" y aparecerá en la lista de gastos de hoy.',
+    ],
+    nota: 'No se puede guardar un gasto sin explicar para qué fue.',
+  },
+  historial: {
+    titulo: 'Historial de mis ventas',
+    que: 'Es el listado de las ventas que tú has registrado.',
+    sirve: 'Revisar qué vendiste, cuándo, con qué método de pago y el detalle de cada ticket.',
+    usar: [
+      'Cada fila es una venta; consulta fecha, productos, método y total.',
+      'Presiona "Actualizar" para traer las más recientes.',
+    ],
+    nota: 'Esta vista es solo de lectura: no puedes editar ni anular ventas. Eso solo lo hace la dueña.',
+  },
+  promos: {
+    titulo: 'Promociones y combos',
+    que: 'Es donde creas y editas las ofertas del local.',
+    sirve: 'Publicar promociones que se muestran automáticamente en la tienda de los clientes.',
+    usar: [
+      'Presiona "Nueva promoción" y completa título, producto, precio o descuento y fechas.',
+      'Marca "Promoción activa" para mostrarla; edita o actualiza cuando lo necesites.',
+    ],
+    nota: 'Solo se muestran en la tienda las promociones activas y dentro de su rango de fechas.',
+  },
+};
+
+const modalAyuda = document.getElementById('modalAyuda');
+
+function renderAyuda(v) {
+  const a = AYUDA[v];
+  if (!a) return;
+  document.querySelector('#ayudaTitle span').textContent = 'Ayuda · ' + a.titulo;
+  const pasos = a.usar.map((p) => `<li>${esc(p)}</li>`).join('');
+  document.getElementById('ayudaBody').innerHTML = `
+    <div class="help-section">
+      <div class="help-ico"><i class="fa-solid fa-lightbulb"></i></div>
+      <div><h4>¿Qué es?</h4><p>${esc(a.que)}</p></div>
+    </div>
+    <div class="help-section">
+      <div class="help-ico"><i class="fa-solid fa-bullseye"></i></div>
+      <div><h4>¿Para qué sirve?</h4><p>${esc(a.sirve)}</p></div>
+    </div>
+    <div class="help-section">
+      <div class="help-ico"><i class="fa-solid fa-list-check"></i></div>
+      <div><h4>¿Cómo se usa?</h4><ol class="help-steps">${pasos}</ol></div>
+    </div>
+    ${a.nota ? `<div class="help-note"><i class="fa-solid fa-circle-exclamation"></i><span>${esc(a.nota)}</span></div>` : ''}`;
+}
+
+function abrirAyuda() {
+  renderAyuda(VISTA_ACTUAL);
+  const wa = document.getElementById('ayudaWhatsApp');
+  const msg = encodeURIComponent(`Hola, necesito ayuda con la sección "${AYUDA[VISTA_ACTUAL]?.titulo || ''}" del panel operativo.`);
+  wa.href = `https://wa.me/${SOPORTE_WHATSAPP}?text=${msg}`;
+  modalAyuda.classList.remove('hidden');
+}
+function cerrarAyuda() { modalAyuda.classList.add('hidden'); }
+
+document.getElementById('btnAyuda').addEventListener('click', abrirAyuda);
+modalAyuda.querySelectorAll('[data-close-ayuda]').forEach((b) => b.addEventListener('click', cerrarAyuda));
+modalAyuda.addEventListener('click', (e) => { if (e.target === modalAyuda) cerrarAyuda(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modalAyuda.classList.contains('hidden')) cerrarAyuda(); });
 
 /* --------------------- Resumen del día (ventas y gastos) --------------------- */
 async function cargarResumen() {
