@@ -144,6 +144,60 @@ input:focus, select:focus, textarea:focus { border-color: var(--gold); }
 /* ---------- Iconos base ---------- */
 i.fa-solid, i.fa-brands, i.fa-regular { line-height: 1; }
 
+/* ---------- Botón de ayuda contextual (admin + cajero) ---------- */
+.help-btn {
+  width: 34px; height: 34px;
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.12s;
+}
+.help-btn:hover { color: var(--gold); border-color: var(--gold); background: var(--surface-2); }
+.help-btn:active { transform: translateY(1px); }
+
+/* ---------- Contenido del modal de ayuda ---------- */
+.help-card { max-width: 640px; }
+.help-body { display: flex; flex-direction: column; gap: 18px; }
+.help-section { display: flex; gap: 14px; }
+.help-ico {
+  width: 38px; height: 38px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 10px;
+  color: var(--gold);
+  font-size: 1rem;
+}
+.help-section h4 { font-size: 0.95rem; margin-bottom: 4px; }
+.help-section p { font-size: 0.9rem; color: var(--text-muted); margin: 0; }
+.help-steps { margin: 6px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.help-steps li { font-size: 0.9rem; color: var(--text); }
+.help-steps li::marker { color: var(--gold); font-weight: 700; }
+.help-note {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+.help-note i { color: var(--gold); margin-top: 2px; }
+.help-support {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.help-support-title { font-size: 0.98rem; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.help-support-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
 /* ---------- Spinner ---------- */
 .spinner {
   width: 34px; height: 34px;
