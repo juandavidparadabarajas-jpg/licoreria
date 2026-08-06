@@ -30,6 +30,11 @@
     <div class="topbar-user">
       <span id="userName" class="muted"></span>
       <span class="rol-badge">Administrador Operativo</span>
+      <button id="btnAyuda" class="help-btn" type="button"
+              aria-label="Ayuda de esta sección"
+              title="¿Qué es esta sección y cómo se usa?">
+        <i class="fa-solid fa-circle-question"></i>
+      </button>
       <button id="btnLogout" class="btn btn-outline"><i class="fa-solid fa-right-from-bracket"></i> Salir</button>
     </div>
   </header>
@@ -297,6 +302,29 @@
           <button type="submit" class="btn btn-gold">Guardar</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL AYUDA (guía por sección) ===================== -->
+  <div id="modalAyuda" class="modal hidden">
+    <div class="modal-card card help-card">
+      <div class="modal-head">
+        <h3 id="ayudaTitle"><i class="fa-solid fa-circle-info gold"></i> <span>Ayuda</span></h3>
+        <button class="modal-close" data-close-ayuda aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="ayudaBody" class="help-body"></div>
+      <div class="help-support">
+        <p class="help-support-title"><i class="fa-solid fa-headset gold"></i> ¿Necesitas más ayuda?</p>
+        <p class="muted small" style="margin:0 0 12px">
+          Si algo no funciona como esperas o tienes una duda que esta guía no resuelve,
+          escríbenos y con gusto te apoyamos.
+        </p>
+        <div class="help-support-actions">
+          <a id="ayudaWhatsApp" class="btn btn-green" target="_blank" rel="noopener">
+            <i class="fa-brands fa-whatsapp"></i> Escribir a soporte
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
