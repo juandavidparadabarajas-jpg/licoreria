@@ -48,10 +48,11 @@ const AYUDA = {
     que: 'Es la pantalla de inicio con un vistazo rápido de cómo va tu día.',
     sirve: 'Saber en segundos cuánto has vendido, cuánto se ha gastado y cuántos tickets llevas, sin buscar nada.',
     usar: [
-      'Las tarjetas muestran las ventas de hoy, los gastos de hoy, el neto (ventas menos gastos) y el número de tickets.',
+      'Las tarjetas muestran el total vendido, cuánto entró en efectivo, cuánto en transferencia o banco, los gastos, el neto y los tickets.',
+      '"En efectivo" y "En transferencia / banco" suman por separado; juntos dan el total de la sesión.',
       'Presiona "Actualizar" para refrescar los números en cualquier momento.',
     ],
-    nota: 'Los datos son solo de tu sesión y del día en curso.',
+    nota: 'Los totales son de tu sesión (desde que abriste el turno). Al cerrar el turno vuelven a 0 automáticamente; los datos no se borran, la dueña los sigue viendo.',
   },
   pos: {
     titulo: 'Punto de Venta',
@@ -72,7 +73,7 @@ const AYUDA = {
       'Al empezar el día, escribe la base inicial de efectivo y presiona "Abrir turno".',
       'Al terminar, cuenta el efectivo físico de la caja, escríbelo y presiona "Cerrar turno".',
     ],
-    nota: 'El sistema NO te muestra cuánto debería haber: tú solo cuentas y reportas. Es a propósito, para que el conteo sea imparcial.',
+    nota: 'El sistema NO te muestra cuánto debería haber: tú solo cuentas y reportas. Al cerrar el turno, el resumen y el historial de la sesión vuelven a 0 para empezar limpio el siguiente.',
   },
   inventario: {
     titulo: 'Inventario y movimientos',
@@ -103,7 +104,7 @@ const AYUDA = {
       'Cada fila es una venta; consulta fecha, productos, método y total.',
       'Presiona "Actualizar" para traer las más recientes.',
     ],
-    nota: 'Esta vista es solo de lectura: no puedes editar ni anular ventas. Eso solo lo hace la dueña.',
+    nota: 'Solo se muestran las ventas de la sesión actual (desde que abriste el turno). Al cerrar el turno el historial se limpia; la dueña puede consultar cualquier día desde su panel. Es solo de lectura: no puedes editar ni anular ventas.',
   },
   promos: {
     titulo: 'Promociones y combos',
@@ -154,17 +155,35 @@ modalAyuda.querySelectorAll('[data-close-ayuda]').forEach((b) => b.addEventListe
 modalAyuda.addEventListener('click', (e) => { if (e.target === modalAyuda) cerrarAyuda(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modalAyuda.classList.contains('hidden')) cerrarAyuda(); });
 
+/* --------------------- Turno abierto actual (marca el inicio de la sesión) ---
+   Las ventas de la sesión se cuentan DESDE la apertura del turno abierto.
+   Al cerrar el turno no queda ninguno abierto → los totales y el historial
+   vuelven a 0 automáticamente (sin borrar datos; el admin los sigue viendo). */
+async function aperturaTurnoActual() {
+  const { data } = await db
+    .from(DB.turnos)
+    .select('apertura_at')
+    .eq('estado', 'ABIERTO')
+    .order('apertura_at', { ascending: false })
+    .limit(1);
+  return data && data[0] ? data[0].apertura_at : null;
+}
+
 /* --------------------- Resumen del día (ventas y gastos) --------------------- */
 async function cargarResumen() {
-  const inicioDia = new Date(); inicioDia.setHours(0, 0, 0, 0);
   const hoyStr = new Date().toISOString().slice(0, 10);
+  const desde = await aperturaTurnoActual();
 
-  // Ventas propias de hoy (RLS limita a este operativo), sin anuladas
-  const { data: ventas } = await db
-    .from(DB.ventas)
-    .select('total, estado, created_at')
-    .neq('estado', 'ANULADA')
-    .gte('created_at', inicioDia.toISOString());
+  // Ventas de la sesión actual (desde la apertura del turno), sin anuladas.
+  let ventas = [];
+  if (desde) {
+    const { data } = await db
+      .from(DB.ventas)
+      .select('total, metodo_pago, estado, created_at')
+      .neq('estado', 'ANULADA')
+      .gte('created_at', desde);
+    ventas = data || [];
+  }
 
   // Gastos de hoy
   const { data: gastos } = await db
@@ -172,13 +191,19 @@ async function cargarResumen() {
     .select('monto, fecha')
     .gte('fecha', hoyStr);
 
-  const totVentas = (ventas || []).reduce((s, v) => s + Number(v.total || 0), 0);
+  const totVentas = ventas.reduce((s, v) => s + Number(v.total || 0), 0);
+  const totEfectivo = ventas
+    .filter((v) => v.metodo_pago === 'Efectivo')
+    .reduce((s, v) => s + Number(v.total || 0), 0);
+  const totBanco = totVentas - totEfectivo; // Transferencia + Tarjeta (simplificado como "banco")
   const totGastos = (gastos || []).reduce((s, g) => s + Number(g.monto || 0), 0);
   const neto = totVentas - totGastos;
 
   document.getElementById('rVentas').textContent = money(totVentas);
+  document.getElementById('rEfectivo').textContent = money(totEfectivo);
+  document.getElementById('rBanco').textContent = money(totBanco);
   document.getElementById('rGastos').textContent = '−' + money(totGastos);
-  document.getElementById('rTickets').textContent = (ventas || []).length;
+  document.getElementById('rTickets').textContent = ventas.length;
   const nEl = document.getElementById('rNeto');
   nEl.textContent = money(neto);
   nEl.className = 'op-value ' + (neto >= 0 ? 'text-green' : 'text-red');
@@ -493,11 +518,20 @@ function detalleItems(items) {
 
 async function cargarHistorial() {
   const body = document.getElementById('histBody');
+  // Solo la sesión actual: ventas desde la apertura del turno abierto.
+  // Al cerrar el turno, el historial se limpia (los datos siguen en el sistema
+  // y la dueña puede consultarlos por día desde su panel).
+  const desde = await aperturaTurnoActual();
+  if (!desde) {
+    body.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:26px">No tienes un turno abierto. Abre un turno para ver aquí las ventas de la sesión.</td></tr>`;
+    return;
+  }
   // RLS limita las filas a las ventas del propio cajero.
   // Solo lectura: el Administrador Operativo no puede anular ni editar ventas.
   const { data, error } = await db
     .from(DB.ventas)
     .select('id, created_at, metodo_pago, total, estado, venta_items(nombre_snapshot, cantidad)')
+    .gte('created_at', desde)
     .order('created_at', { ascending: false })
     .limit(100);
   if (error) {
@@ -686,10 +720,15 @@ document.getElementById('formCierre').addEventListener('submit', async (e) => {
   const { error } = await db.rpc(DB.rpcCerrarTurnoCiego, { p_contado: contado });
   if (error) { err('No se pudo cerrar el turno: ' + error.message); return; }
   document.getElementById('formCierre').reset();
-  ok('Turno cerrado. El conteo quedó registrado.');
+  ok('Turno cerrado. El conteo quedó registrado. Los totales de la sesión vuelven a 0.');
   // No se registra el teórico ni el descuadre (cierre a ciegas).
   logAudit('CERRAR_TURNO', `Cerró turno declarando ${money(contado)} en efectivo contado`);
+  // Reinicia los totales de la sesión en pantalla (los datos NO se borran).
+  SESION_TOTAL = 0;
+  document.getElementById('sesionTotal').textContent = money(0);
   cargarEstadoTurno();
+  cargarResumen();
+  cargarHistorial();
 });
 
 /* =========================================================================
