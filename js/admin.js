@@ -30,9 +30,11 @@ const titulos = {
   auditoria: 'Auditoría operativa',
   usuarios: 'Gestión de usuarios',
 };
+let VISTA_ACTUAL = 'dashboard';
 document.querySelectorAll('.side-link[data-view]').forEach((link) =>
   link.addEventListener('click', () => {
     const v = link.dataset.view;
+    VISTA_ACTUAL = v;
     document.querySelectorAll('.side-link').forEach((l) => l.classList.remove('active'));
     link.classList.add('active');
     document.getElementById('viewTitle').textContent = titulos[v];
@@ -48,6 +50,148 @@ document.querySelectorAll('.side-link[data-view]').forEach((link) =>
     if (v === 'ventas') cargarHistorialVentas();
   })
 );
+
+/* =========================================================================
+   AYUDA CONTEXTUAL — guía "qué es / para qué sirve / cómo se usa" por sección
+   ========================================================================= */
+const AYUDA = {
+  dashboard: {
+    titulo: 'Dashboard',
+    que: 'Es la pantalla de inicio: un resumen rápido de cómo va el negocio hoy.',
+    sirve: 'Ver de un vistazo las ventas del día, la ganancia neta, cuántos tickets se han hecho y cómo está el inventario, sin tener que buscar nada.',
+    usar: [
+      'Las tarjetas de arriba muestran los números clave de HOY: total vendido, cuánto entró en efectivo, cuánto en transferencia o banco, la ganancia, las transacciones y los productos en catálogo.',
+      '"En efectivo" y "En transferencia / banco" suman por separado; juntos dan el total vendido del día.',
+      'El gráfico de líneas muestra la evolución de las ventas de los últimos 7 días y el de barras los 8 productos con más stock.',
+    ],
+    nota: 'Estos números se actualizan solos cada vez que entras. Si anulas una venta, el dashboard lo refleja al instante.',
+  },
+  finanzas: {
+    titulo: 'Finanzas y contabilidad',
+    que: 'Es la contabilidad del negocio: ingresos, costos, gastos y ganancia real.',
+    sirve: 'Saber cuánto ganó realmente el negocio en un periodo (hoy, este mes, este año o el rango que elijas), descontando el costo de la mercancía y los gastos.',
+    usar: [
+      'Elige un rango con los campos "Desde" y "Hasta" y presiona "Aplicar", o usa los botones rápidos "Hoy", "Este mes" y "Este año".',
+      'La tarjeta destacada "Utilidad neta" es la ganancia final real: ingresos menos costo de mercancía menos gastos.',
+      'El gráfico compara ingresos, costos, gastos y utilidad para entender de dónde salen los números.',
+    ],
+    nota: 'La utilidad neta se muestra en verde cuando hay ganancia y en rojo si el periodo dio pérdida.',
+  },
+  ventas: {
+    titulo: 'Historial de ventas',
+    que: 'Es el listado de todas las ventas registradas en el sistema.',
+    sirve: 'Consultar qué se vendió, cuándo, con qué método de pago, y anular una venta si se cobró algo por error.',
+    usar: [
+      'Por defecto se muestran las ventas del día en curso. Cambia la fecha para revisar cualquier día anterior (por ejemplo, un cierre pasado), o usa "Ver todo" para el listado completo.',
+      'Cada fila es una venta. Toca el número de productos para desplegar el detalle de lo que incluyó.',
+      'El botón "Anular" cancela una venta hecha por error: devuelve el stock automáticamente y la deja marcada en rojo.',
+    ],
+    nota: 'Consultar días pasados no altera nada: ni el día en curso ni ningún otro. Anular NO borra la venta: queda registrada como ANULADA para constancia pero se excluye de la contabilidad. Solo la dueña puede anular.',
+  },
+  productos: {
+    titulo: 'Gestión de productos',
+    que: 'Es el catálogo completo de la licorería.',
+    sirve: 'Crear productos nuevos, editar precios, costos y stock, subir fotos y ver el margen de ganancia de cada uno.',
+    usar: [
+      'Usa el buscador o el filtro por categoría para encontrar un producto.',
+      'Presiona "Nuevo producto" para agregar uno; en el formulario puedes subir una imagen o pegar una URL.',
+      'En cada fila, el ícono de lápiz edita el producto y el de papelera lo elimina.',
+    ],
+    nota: 'Todo lo que cambies aquí se refleja al instante en la tienda pública. Un producto sin stock desaparece solo del catálogo del cliente.',
+  },
+  promociones: {
+    titulo: 'Gestión de promociones',
+    que: 'Es donde se crean y administran las ofertas y combos.',
+    sirve: 'Mostrar promociones en la tienda pública durante el periodo que elijas, con precio especial o descuento.',
+    usar: [
+      'Presiona "Nueva promoción" y completa título, producto relacionado, precio o descuento y fechas de vigencia.',
+      'Marca la casilla "Promoción activa" para que se muestre; desmárcala para ocultarla sin borrarla.',
+      'Edita o elimina cualquier promoción con los íconos de cada fila.',
+    ],
+    nota: 'Solo se muestran en la tienda las promociones ACTIVAS y dentro de su rango de fechas. La columna "Estado" te dice si está vigente.',
+  },
+  gastos: {
+    titulo: 'Registro de gastos',
+    que: 'Es el registro de los egresos del negocio.',
+    sirve: 'Anotar todo lo que sale de caja (proveedores, arriendo, servicios, nómina, etc.) para que la contabilidad refleje la ganancia real.',
+    usar: [
+      'Llena el formulario de la izquierda: concepto, categoría, monto y fecha. El concepto es obligatorio.',
+      'Presiona "Registrar gasto" y aparecerá al instante en la lista de la derecha.',
+      'La lista muestra los gastos recientes con su total; usa la papelera para eliminar uno.',
+    ],
+    nota: 'Todo gasto que registres aquí se descuenta automáticamente de la utilidad en la sección de Finanzas.',
+  },
+  caja: {
+    titulo: 'Cierre de caja',
+    que: 'Es el control del dinero: cierres del día y auditoría de los turnos del personal.',
+    sirve: 'Configurar el cierre automático diario, hacer un cierre manual y comparar lo que el personal contó contra lo que el sistema esperaba.',
+    usar: [
+      'En "Configuración de Caja" fija la hora del cierre automático diario y guárdala.',
+      'Usa "Ejecutar cierre ahora" solo si necesitas cerrar el día en curso de inmediato.',
+      'La tabla "Turnos y descuadres" muestra los cierres a ciegas del personal: base, contado, teórico y si hubo faltante o sobrante.',
+    ],
+    nota: 'El personal del local NUNCA ve el descuadre: cuentan el efectivo a ciegas y solo tú, como dueña, ves la comparación aquí.',
+  },
+  auditoria: {
+    titulo: 'Auditoría operativa',
+    que: 'Es la bitácora automática de todas las acciones importantes del sistema.',
+    sirve: 'Saber quién hizo qué y cuándo: si alguien editó un producto, creó una promoción, registró un gasto o anuló una venta.',
+    usar: [
+      'Cada fila registra fecha y hora, usuario, tipo de acción y el detalle.',
+      'Escribe en el filtro para buscar por usuario, acción o detalle.',
+      'Usa "Actualizar" para traer los registros más recientes.',
+    ],
+    nota: 'Esta bitácora se llena sola: no hay que registrar nada a mano. Es tu respaldo para revisar cualquier movimiento del personal.',
+  },
+  usuarios: {
+    titulo: 'Gestión de usuarios',
+    que: 'Es donde administras las cuentas de acceso del personal.',
+    sirve: 'Crear cuentas para el personal del local (Administrador Operativo), reiniciar contraseñas y quitar el acceso a quien ya no trabaje.',
+    usar: [
+      'En el formulario de la izquierda crea una cuenta con nombre, correo y una contraseña temporal.',
+      'En la lista de la derecha, "Reset" envía al usuario un correo para que cambie su contraseña.',
+      'La papelera elimina el acceso de un usuario (no puedes eliminarte a ti misma).',
+    ],
+    nota: 'El Administrador Operativo tiene permisos limitados: no puede editar precios ni márgenes, ni anular ventas. Ese control es solo tuyo.',
+  },
+};
+
+const modalAyuda = document.getElementById('modalAyuda');
+
+function renderAyuda(v) {
+  const a = AYUDA[v];
+  if (!a) return;
+  document.querySelector('#ayudaTitle span').textContent = 'Ayuda · ' + a.titulo;
+  const pasos = a.usar.map((p) => `<li>${esc(p)}</li>`).join('');
+  document.getElementById('ayudaBody').innerHTML = `
+    <div class="help-section">
+      <div class="help-ico"><i class="fa-solid fa-lightbulb"></i></div>
+      <div><h4>¿Qué es?</h4><p>${esc(a.que)}</p></div>
+    </div>
+    <div class="help-section">
+      <div class="help-ico"><i class="fa-solid fa-bullseye"></i></div>
+      <div><h4>¿Para qué sirve?</h4><p>${esc(a.sirve)}</p></div>
+    </div>
+    <div class="help-section">
+      <div class="help-ico"><i class="fa-solid fa-list-check"></i></div>
+      <div><h4>¿Cómo se usa?</h4><ol class="help-steps">${pasos}</ol></div>
+    </div>
+    ${a.nota ? `<div class="help-note"><i class="fa-solid fa-circle-exclamation"></i><span>${esc(a.nota)}</span></div>` : ''}`;
+}
+
+function abrirAyuda() {
+  renderAyuda(VISTA_ACTUAL);
+  const wa = document.getElementById('ayudaWhatsApp');
+  const msg = encodeURIComponent(`Hola, necesito ayuda con la sección "${AYUDA[VISTA_ACTUAL]?.titulo || ''}" del panel de administración.`);
+  wa.href = `https://wa.me/${SOPORTE_WHATSAPP}?text=${msg}`;
+  modalAyuda.classList.remove('hidden');
+}
+function cerrarAyuda() { modalAyuda.classList.add('hidden'); }
+
+document.getElementById('btnAyuda').addEventListener('click', abrirAyuda);
+modalAyuda.querySelectorAll('[data-close-ayuda]').forEach((b) => b.addEventListener('click', cerrarAyuda));
+modalAyuda.addEventListener('click', (e) => { if (e.target === modalAyuda) cerrarAyuda(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modalAyuda.classList.contains('hidden')) cerrarAyuda(); });
 
 /* =========================================================================
    PRODUCTOS (carga compartida)
@@ -256,19 +400,27 @@ async function cargarMetricas() {
   // Si tu esquema difiere, ajusta los nombres de columna aquí.
   const { data: ventasHoy, error } = await db
     .from(DB.ventas)
-    .select('total, ganancia, created_at')
+    .select('total, ganancia, metodo_pago, created_at')
     .neq('estado', 'ANULADA')
     .gte('created_at', desdeHoy);
 
   if (error) {
     console.warn('No se pudieron leer ventas de hoy:', error.message);
     document.getElementById('mVentas').textContent = money(0);
+    document.getElementById('mEfectivo').textContent = money(0);
+    document.getElementById('mBanco').textContent = money(0);
     document.getElementById('mGanancia').textContent = money(0);
     document.getElementById('mTx').textContent = '0';
   } else {
     const totalVentas = ventasHoy.reduce((s, v) => s + Number(v.total || 0), 0);
     const totalGanancia = ventasHoy.reduce((s, v) => s + Number(v.ganancia || 0), 0);
+    const totalEfectivo = ventasHoy
+      .filter((v) => v.metodo_pago === 'Efectivo')
+      .reduce((s, v) => s + Number(v.total || 0), 0);
+    const totalBanco = totalVentas - totalEfectivo; // Transferencia + Tarjeta ("banco")
     document.getElementById('mVentas').textContent = money(totalVentas);
+    document.getElementById('mEfectivo').textContent = money(totalEfectivo);
+    document.getElementById('mBanco').textContent = money(totalBanco);
     document.getElementById('mGanancia').textContent = money(totalGanancia);
     document.getElementById('mTx').textContent = ventasHoy.length;
   }
@@ -847,17 +999,31 @@ document.getElementById('btnCierreManual').addEventListener('click', async () =>
    ========================================================================= */
 async function cargarHistorialVentas() {
   const body = document.getElementById('ventasBody');
-  const { data, error } = await db
+  const fecha = document.getElementById('ventasFecha').value; // '' = todas
+  let query = db
     .from(DB.ventas)
     .select('id, created_at, metodo_pago, total, estado, venta_items(nombre_snapshot, cantidad, precio_unitario)')
     .order('created_at', { ascending: false })
-    .limit(200);
+    .limit(300);
+
+  // Filtro por día: solo consulta, no altera ningún dato del día en curso ni de otros.
+  if (fecha) {
+    const inicio = new Date(fecha + 'T00:00:00');
+    const fin = new Date(inicio);
+    fin.setDate(fin.getDate() + 1);
+    query = query.gte('created_at', inicio.toISOString()).lt('created_at', fin.toISOString());
+  }
+
+  const { data, error } = await query;
   if (error) {
     body.innerHTML = `<tr><td colspan="7" class="text-red">${esc(error.message)}</td></tr>`;
     return;
   }
   if (!data.length) {
-    body.innerHTML = `<tr><td colspan="7" class="muted" style="text-align:center;padding:26px">Sin ventas registradas.</td></tr>`;
+    const txt = fecha
+      ? 'No hubo ventas registradas ese día.'
+      : 'Sin ventas registradas.';
+    body.innerHTML = `<tr><td colspan="7" class="muted" style="text-align:center;padding:26px">${txt}</td></tr>`;
     return;
   }
   body.innerHTML = data.map(filaVenta).join('');
@@ -907,7 +1073,14 @@ async function anularVenta(id) {
   cargarProductos(); // refleja el stock devuelto en tabla y gráfico
 }
 
+// Por defecto muestra el día en curso; se puede cambiar de día o ver todo.
+document.getElementById('ventasFecha').value = new Date().toISOString().slice(0, 10);
 document.getElementById('btnRefrescarVentas').addEventListener('click', cargarHistorialVentas);
+document.getElementById('ventasFecha').addEventListener('change', cargarHistorialVentas);
+document.getElementById('btnVentasTodo').addEventListener('click', () => {
+  document.getElementById('ventasFecha').value = '';
+  cargarHistorialVentas();
+});
 
 /* =========================================================================
    AUDITORÍA OPERATIVA — historial de acciones (audit_logs)
