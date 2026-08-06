@@ -14,6 +14,9 @@ const SUPABASE_ANON_KEY = 'sb_publishable_jEC1uKsuEl70Ip4Rqt6ZIA_sEsbHlwu';
 // Número de WhatsApp de la licorería en formato internacional SIN '+' ni espacios.
 const WHATSAPP_NUMBER = '573228619735';
 
+// Número de soporte técnico del sistema (botón de ayuda), sin '+' ni espacios.
+const SOPORTE_WHATSAPP = '573238361617';
+
 // Datos públicos de la licorería (usados en landing y footer)
 const NEGOCIO = {
   nombre: 'Licorería Madnight',
